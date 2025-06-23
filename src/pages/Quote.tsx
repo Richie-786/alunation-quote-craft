@@ -16,13 +16,15 @@ const Quote = () => {
     gstNumber: '',
     address: '',
     phone: '',
-    email: ''
+    email: '',
+    projectName: ''
   });
 
   const [quotationItems, setQuotationItems] = useState<QuotationItem[]>([]);
   const [dimensionUnit, setDimensionUnit] = useState<'feet' | 'mm'>('feet');
+  const [transportationCost, setTransportationCost] = useState<number>(0);
 
-  const addQuotationItem = (item: Omit<QuotationItem, 'slNo' | 'area' | 'totalCost'>) => {
+  const addQuotationItem = (item: Omit<QuotationItem, 'slNo' | 'area' | 'totalCost' | 'note'> & { note?: string }) => {
     let areaInSqft: number;
     
     if (dimensionUnit === 'feet') {
@@ -70,12 +72,12 @@ const Quote = () => {
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + calculateTax();
+    return calculateSubtotal() + calculateTax() + transportationCost;
   };
 
   const handleExportToPDF = () => {
     try {
-      exportToPDF(customerDetails, quotationItems, calculateSubtotal(), calculateTax(), calculateTotal());
+      exportToPDF(customerDetails, quotationItems, calculateSubtotal(), calculateTax(), calculateTotal(), transportationCost);
       toast({
         title: "PDF Exported",
         description: "Quotation has been exported to PDF successfully.",
@@ -91,7 +93,7 @@ const Quote = () => {
 
   const handleExportToExcel = () => {
     try {
-      exportToExcel(customerDetails, quotationItems, calculateSubtotal(), calculateTax(), calculateTotal());
+      exportToExcel(customerDetails, quotationItems, calculateSubtotal(), calculateTax(), calculateTotal(), transportationCost);
       toast({
         title: "Excel Exported",
         description: "Quotation has been exported to Excel successfully.",
@@ -173,6 +175,28 @@ const Quote = () => {
               </CardContent>
             </Card>
 
+            {/* Transportation Cost */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-blue-900">Additional Costs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <label htmlFor="transportationCost" className="block text-sm font-medium text-gray-700">
+                    Transportation Cost (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    id="transportationCost"
+                    value={transportationCost || ''}
+                    onChange={(e) => setTransportationCost(Number(e.target.value) || 0)}
+                    placeholder="Enter transportation cost"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Quotation Table */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
@@ -196,6 +220,7 @@ const Quote = () => {
                   subtotal={calculateSubtotal()}
                   tax={calculateTax()}
                   total={calculateTotal()}
+                  transportationCost={transportationCost}
                 />
               </CardContent>
             </Card>

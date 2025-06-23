@@ -5,6 +5,7 @@ export interface CustomerDetails {
   address: string;
   phone: string;
   email: string;
+  projectName: string;
 }
 
 export interface QuotationItem {
@@ -17,4 +18,5 @@ export interface QuotationItem {
   quantity: number;
   pricePerSqft: number;
   totalCost: number;
+  note?: string;
 }

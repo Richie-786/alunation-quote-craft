@@ -11,6 +11,7 @@ interface QuotationTableProps {
   subtotal: number;
   tax: number;
   total: number;
+  transportationCost?: number;
 }
 
 const QuotationTable: React.FC<QuotationTableProps> = ({
@@ -19,7 +20,8 @@ const QuotationTable: React.FC<QuotationTableProps> = ({
   dimensionUnit,
   subtotal,
   tax,
-  total
+  total,
+  transportationCost = 0
 }) => {
   if (items.length === 0) {
     return (
@@ -45,6 +47,7 @@ const QuotationTable: React.FC<QuotationTableProps> = ({
               <th className="border border-gray-300 p-3 text-left">Quantity</th>
               <th className="border border-gray-300 p-3 text-left">Price/Sq.ft (₹)</th>
               <th className="border border-gray-300 p-3 text-left">Total Cost (₹)</th>
+              <th className="border border-gray-300 p-3 text-left">Note</th>
               <th className="border border-gray-300 p-3 text-left">Action</th>
             </tr>
           </thead>
@@ -64,6 +67,7 @@ const QuotationTable: React.FC<QuotationTableProps> = ({
                 <td className="border border-gray-300 p-3 font-medium">
                   ₹{item.totalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                 </td>
+                <td className="border border-gray-300 p-3">{item.note || '-'}</td>
                 <td className="border border-gray-300 p-3">
                   <Button
                     variant="destructive"
@@ -94,6 +98,14 @@ const QuotationTable: React.FC<QuotationTableProps> = ({
               ₹{tax.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
             </span>
           </div>
+          {transportationCost > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-lg font-medium">Transportation Cost:</span>
+              <span className="text-lg font-medium">
+                ₹{transportationCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          )}
           <hr className="border-blue-200" />
           <div className="flex justify-between items-center">
             <span className="text-xl font-bold text-blue-900">Total Amount:</span>
