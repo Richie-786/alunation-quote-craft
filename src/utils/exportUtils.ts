@@ -1,7 +1,7 @@
 
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import 'jspdf-autotable';
 import { CustomerDetails, QuotationItem } from '@/types/quotation';
 
 export const exportToExcel = (
@@ -100,7 +100,7 @@ export const exportToPDF = (
     `₹${item.totalCost.toFixed(2)}`
   ]);
 
-  autoTable(doc, {
+  (doc as any).autoTable({
     head: [['SL No.', 'Name', 'Description', 'Height', 'Width', 'Area (Sq.ft)', 'Qty', 'Price/Sq.ft', 'Total Cost']],
     body: tableData,
     startY: 130,
