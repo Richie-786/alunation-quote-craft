@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import QuotationTable from '@/components/QuotationTable';
 import { CustomerDetails, QuotationItem } from '@/types/quotation';
 import { FileText, FileSpreadsheet, Upload } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { exportToExcel, exportToPDF, importFromExcel } from '@/utils/exportUtils';
 
 const Quote = () => {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
@@ -73,30 +73,58 @@ const Quote = () => {
     return calculateSubtotal() + calculateTax();
   };
 
-  const exportToPDF = () => {
-    // This would integrate with a PDF library like jsPDF
-    toast({
-      title: "PDF Export",
-      description: "PDF export functionality will be implemented with jsPDF library.",
-    });
+  const handleExportToPDF = () => {
+    try {
+      exportToPDF(customerDetails, quotationItems, calculateSubtotal(), calculateTax(), calculateTotal());
+      toast({
+        title: "PDF Exported",
+        description: "Quotation has been exported to PDF successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export PDF. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const exportToExcel = () => {
-    // This would integrate with a library like xlsx
-    toast({
-      title: "Excel Export",
-      description: "Excel export functionality will be implemented with xlsx library.",
-    });
+  const handleExportToExcel = () => {
+    try {
+      exportToExcel(customerDetails, quotationItems, calculateSubtotal(), calculateTax(), calculateTotal());
+      toast({
+        title: "Excel Exported",
+        description: "Quotation has been exported to Excel successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export Excel. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportFromExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // This would parse Excel file and populate the quotation
-      toast({
-        title: "Import Started",
-        description: "Excel import functionality will be implemented with xlsx library.",
-      });
+      try {
+        const { customerDetails: importedCustomer, items: importedItems } = await importFromExcel(file);
+        setCustomerDetails(importedCustomer);
+        setQuotationItems(importedItems);
+        toast({
+          title: "Import Successful",
+          description: "Excel file has been imported successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Import Failed",
+          description: "Failed to import Excel file. Please check the file format.",
+          variant: "destructive"
+        });
+      }
+      // Reset file input
+      event.target.value = '';
     }
   };
 
@@ -150,11 +178,11 @@ const Quote = () => {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-blue-900">Quotation Items</CardTitle>
                 <div className="flex gap-2">
-                  <Button onClick={exportToPDF} variant="outline" size="sm">
+                  <Button onClick={handleExportToPDF} variant="outline" size="sm">
                     <FileText className="w-4 h-4 mr-2" />
                     Export PDF
                   </Button>
-                  <Button onClick={exportToExcel} variant="outline" size="sm">
+                  <Button onClick={handleExportToExcel} variant="outline" size="sm">
                     <FileSpreadsheet className="w-4 h-4 mr-2" />
                     Export Excel
                   </Button>
@@ -181,13 +209,13 @@ const Quote = () => {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600">
-                    Import an existing Excel file to modify a previous quotation.
+                    Import an existing Excel file to modify a previous quotation. The Excel file should have 'Customer Details' and 'Quotation' sheets.
                   </p>
                   <div className="flex items-center gap-4">
                     <input
                       type="file"
                       accept=".xlsx,.xls"
-                      onChange={importFromExcel}
+                      onChange={handleImportFromExcel}
                       className="hidden"
                       id="excel-import"
                     />
