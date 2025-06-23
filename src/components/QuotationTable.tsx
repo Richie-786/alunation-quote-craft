@@ -43,6 +43,7 @@ const QuotationTable: React.FC<QuotationTableProps> = ({
               <th className="border border-gray-300 p-3 text-left">Width ({dimensionUnit})</th>
               <th className="border border-gray-300 p-3 text-left">Area (Sq.ft)</th>
               <th className="border border-gray-300 p-3 text-left">Quantity</th>
+              <th className="border border-gray-300 p-3 text-left">Price/Sq.ft (₹)</th>
               <th className="border border-gray-300 p-3 text-left">Total Cost (₹)</th>
               <th className="border border-gray-300 p-3 text-left">Action</th>
             </tr>
@@ -57,6 +58,9 @@ const QuotationTable: React.FC<QuotationTableProps> = ({
                 <td className="border border-gray-300 p-3">{item.width.toFixed(2)}</td>
                 <td className="border border-gray-300 p-3">{item.area.toFixed(2)}</td>
                 <td className="border border-gray-300 p-3">{item.quantity}</td>
+                <td className="border border-gray-300 p-3">
+                  ₹{item.pricePerSqft.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                </td>
                 <td className="border border-gray-300 p-3 font-medium">
                   ₹{item.totalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                 </td>

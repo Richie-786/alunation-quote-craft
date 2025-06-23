@@ -15,5 +15,6 @@ export interface QuotationItem {
   width: number;
   area: number;
   quantity: number;
+  pricePerSqft: number;
   totalCost: number;
 }

@@ -12,27 +12,26 @@ interface QuotationFormProps {
   onAddItem: (item: Omit<QuotationItem, 'slNo' | 'area' | 'totalCost'>) => void;
   dimensionUnit: 'feet' | 'mm';
   setDimensionUnit: (unit: 'feet' | 'mm') => void;
-  pricePerSqft: number;
 }
 
 const QuotationForm: React.FC<QuotationFormProps> = ({
   onAddItem,
   dimensionUnit,
-  setDimensionUnit,
-  pricePerSqft
+  setDimensionUnit
 }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     height: '',
     width: '',
-    quantity: '1'
+    quantity: '1',
+    pricePerSqft: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.height || !formData.width) {
+    if (!formData.name || !formData.height || !formData.width || !formData.pricePerSqft) {
       return;
     }
 
@@ -41,7 +40,8 @@ const QuotationForm: React.FC<QuotationFormProps> = ({
       description: formData.description,
       height: Number(formData.height),
       width: Number(formData.width),
-      quantity: Number(formData.quantity)
+      quantity: Number(formData.quantity),
+      pricePerSqft: Number(formData.pricePerSqft)
     });
 
     // Reset form
@@ -50,7 +50,8 @@ const QuotationForm: React.FC<QuotationFormProps> = ({
       description: '',
       height: '',
       width: '',
-      quantity: '1'
+      quantity: '1',
+      pricePerSqft: ''
     });
   };
 
@@ -63,7 +64,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="itemName">Item Name *</Label>
           <Input
@@ -87,13 +88,6 @@ const QuotationForm: React.FC<QuotationFormProps> = ({
             </SelectContent>
           </Select>
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="priceDisplay">Price per Sq.ft</Label>
-          <div className="p-2 bg-gray-100 rounded-md text-sm font-medium">
-            ₹{pricePerSqft.toLocaleString('en-IN')}
-          </div>
-        </div>
       </div>
 
       <div className="space-y-2">
@@ -107,7 +101,7 @@ const QuotationForm: React.FC<QuotationFormProps> = ({
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-2">
           <Label htmlFor="height">Height ({dimensionUnit}) *</Label>
           <Input
@@ -145,6 +139,20 @@ const QuotationForm: React.FC<QuotationFormProps> = ({
             onChange={(e) => handleInputChange('quantity', e.target.value)}
             placeholder="Enter quantity"
             min="1"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="pricePerSqft">Price per Sq.ft (₹) *</Label>
+          <Input
+            id="pricePerSqft"
+            type="number"
+            value={formData.pricePerSqft}
+            onChange={(e) => handleInputChange('pricePerSqft', e.target.value)}
+            placeholder="Enter price"
+            min="0"
+            step="0.01"
             required
           />
         </div>
